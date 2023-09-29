@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ghbvft6.Calq.Dvo", "Ghbvft6.Calq.Dvo\Ghbvft6.Calq.Dvo.csproj", "{F3980DC5-E467-4FF7-ADE0-DF73A5842B15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ghbvft6.Calq.DvoTest", "Ghbvft6.Calq.DvoTest\Ghbvft6.Calq.DvoTest.csproj", "{BBFBA911-F214-4F98-A835-BCDCF4BF1BEA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F3980DC5-E467-4FF7-ADE0-DF73A5842B15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3980DC5-E467-4FF7-ADE0-DF73A5842B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3980DC5-E467-4FF7-ADE0-DF73A5842B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3980DC5-E467-4FF7-ADE0-DF73A5842B15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBFBA911-F214-4F98-A835-BCDCF4BF1BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBFBA911-F214-4F98-A835-BCDCF4BF1BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBFBA911-F214-4F98-A835-BCDCF4BF1BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBFBA911-F214-4F98-A835-BCDCF4BF1BEA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
