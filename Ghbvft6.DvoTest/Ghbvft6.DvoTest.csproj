@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ghbvft6.Calq.Dvo\Ghbvft6.Calq.Dvo.csproj" />
+    <ProjectReference Include="..\Ghbvft6.Dvo\Ghbvft6.Dvo.csproj" />
   </ItemGroup>
 
 </Project>
