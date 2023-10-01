@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using static Ghbvft6.Calq.Terminal.CommandLineUtil;
 
-namespace Ghbvft6.Calq.Dvo;
+namespace Ghbvft6.Dvo;
 
 class Program {
     private void RetryWithStashingCMD(string cmd) {
