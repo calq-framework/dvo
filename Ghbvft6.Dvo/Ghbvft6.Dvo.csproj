@@ -12,6 +12,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Ghbvft6.Calq.Terminal" Version="0.*" />
-		<PackageReference Include="Ghbvft6.Calq.Tooler" Version="0.*" />
+		<PackageReference Include="CalqFramework.Tooler" Version="0.*" />
 	</ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
-﻿using Ghbvft6.Calq.Terminal;
-using Ghbvft6.Calq.Tooler;
+﻿using CalqFramework.Tooler;
+using Ghbvft6.Calq.Terminal;
 using System.Text.RegularExpressions;
 using System.Xml;
 using static Ghbvft6.Calq.Terminal.CommandLineUtil;
@@ -23,7 +23,7 @@ class Program {
         }
     }
 
-    public void init(string type, string projectName) {
+    public void Init(string type, string projectName) {
         if (string.IsNullOrEmpty(type)) {
             CMD($"dotnet {Environment.GetCommandLineArgs()}");
             return;
@@ -145,28 +145,28 @@ class Program {
         }
     }
 
-    public void pull() {
+    public void Pull() {
         RetryWithStashingCMD("git pull");
     }
 
-    public void branch(string branchName, bool create = false) {
+    public void Switch(string branchName, bool create = false) {
         if (create) {
             CMD("git fetch origin main");
             CMD($"git switch -c {branchName} origin/main");
             CMD($"git push --set-upstream origin {branchName}");
         } else {
             RetryWithStashingCMD($"git switch {branchName}");
-            pull();
+            Pull();
         }
     }
 
-    public void issue(string titleOrNumber) {
+    public void Issue(string titleOrNumber) {
         if (Regex.Match(titleOrNumber, @"^[0-9]+$").Value == titleOrNumber) {
             var branchName = $"issues/{titleOrNumber}";
             try {
-                branch(branchName, false);
+                Switch(branchName, false);
             } catch (CommandExecutionException) {
-                branch(branchName, true);
+                Switch(branchName, true);
             }
             return;
         }
@@ -179,10 +179,10 @@ class Program {
             throw new Exception("Failed to resolve issue number from 'gh issue create'.");
         }
 
-        branch($"issues/{issueNumber}", true);
+        Switch($"issues/{issueNumber}", true);
     }
 
-    public void update() {
+    public void Update() {
         var branchName = CMD("git branch --show-current").Trim();
         if (branchName == "main") {
             Console.WriteLine("ERROR: current branch is set to 'main'");
@@ -199,7 +199,7 @@ class Program {
         CMD("git merge origin/main --autostash");
     }
 
-    public void pr() {
+    public void Pr() {
         var branchName = CMD("git branch --show-current").Trim();
         if (branchName == "main") {
             Console.WriteLine("ERROR: current branch is set to 'main'");
@@ -211,7 +211,7 @@ class Program {
             Environment.Exit(1);
         }
 
-        update();
+        Update();
         CMD("git push");
         if (string.IsNullOrEmpty(prState)) {
             var issueNumber = branchName.Replace("issues/", "");
@@ -227,7 +227,7 @@ class Program {
         }
     }
 
-    public void merge() {
+    public void Merge() {
         var branchName = CMD("git branch --show-current").Trim();
 
         if (branchName == "main") {
@@ -237,16 +237,16 @@ class Program {
 
         var issueNumber = branchName.StartsWith("issues/") ? branchName.Substring("issues/".Length) : branchName;
 
-        pr();
+        Pr();
         CMD("gh pr merge --squash");
         CMD($"git push origin --delete {branchName}");
         CMD($"gh issue close {issueNumber}");
-        branch("main", false);
+        Switch("main", false);
         CMD($"git branch --delete --force {branchName}");
-        pull();
+        Pull();
     }
 
     static void Main(string[] args) {
-        Tool.Execute(new Program(), args);
+        Tool.Execute(new Program(), args, ToolerOptions.IgnoreCase);
     }
 }
