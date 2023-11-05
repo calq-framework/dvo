@@ -1,10 +1,10 @@
 ﻿using CalqFramework.Tooler;
-using Ghbvft6.Calq.Terminal;
+using CalqFramework.Terminal;
 using System.Text.RegularExpressions;
 using System.Xml;
-using static Ghbvft6.Calq.Terminal.CommandLineUtil;
+using static CalqFramework.Terminal.CommandLineUtil;
 
-namespace Ghbvft6.Dvo;
+namespace CalqFrameworkDvo;
 
 class Program {
     private void RetryWithStashingCMD(string cmd) {

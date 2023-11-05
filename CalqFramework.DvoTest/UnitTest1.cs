@@ -1,4 +1,4 @@
-namespace Ghbvft6.DvoTest;
+namespace CalqFrameworkDvoTest;
 
 public class UnitTest1
 {

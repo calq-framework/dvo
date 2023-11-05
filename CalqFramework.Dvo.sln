@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ghbvft6.Dvo", "Ghbvft6.Dvo\Ghbvft6.Dvo.csproj", "{6A6E9095-5F63-432B-B9D9-ADE1E2BF328B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalqFramework.Dvo", "CalqFramework.Dvo\CalqFramework.Dvo.csproj", "{6A6E9095-5F63-432B-B9D9-ADE1E2BF328B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ghbvft6.DvoTest", "Ghbvft6.DvoTest\Ghbvft6.DvoTest.csproj", "{6FB0B3BE-AB58-450A-8980-D04537D4F6A3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalqFramework.DvoTest", "CalqFramework.DvoTest\CalqFramework.DvoTest.csproj", "{6FB0B3BE-AB58-450A-8980-D04537D4F6A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
