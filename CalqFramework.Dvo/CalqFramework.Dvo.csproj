@@ -6,7 +6,7 @@
 		<Nullable>enable</Nullable>
 		<RootNamespace>CalqFrameworkDvo</RootNamespace>
 		<PackageId>CalqFrameworkDvo</PackageId>
-		<Version>0.0.0</Version>
+		<Version>0.1.0</Version>
 		<PackAsTool>true</PackAsTool>
 		<ToolCommandName>dvo</ToolCommandName>
 	</PropertyGroup>
