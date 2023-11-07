@@ -243,6 +243,10 @@ class Program {
         Pull();
     }
 
+    public void Relock() {
+        CMD("dotnet restore --no-cache --force-evaluate --use-lock-file");
+    }
+
     static void Main(string[] args) {
         Tool.Execute(new Program(), args, ToolerOptions.IgnoreCase);
     }
