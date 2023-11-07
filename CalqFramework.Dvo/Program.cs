@@ -107,9 +107,7 @@ class Program {
                 var cloneDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
                 Directory.CreateDirectory(cloneDir);
                 CMD($"gh repo clone calq-framework/.github {cloneDir} -- --depth 1 --branch main");
-                File.WriteAllText(".github/workflows/seqflow-merge-and-release.yaml", File.ReadAllText(Path.Combine(cloneDir, "workflow-templates/seqflow-merge-and-release.yaml")).Replace("$default-branch", "main"));
-                File.WriteAllText(".github/workflows/seqflow-manual-release.yaml", File.ReadAllText(Path.Combine(cloneDir, "workflow-templates/seqflow-manual-release.yaml")).Replace("$default-branch", "main"));
-                File.WriteAllText(".github/workflows/validate-seqflow-pr.yaml", File.ReadAllText(Path.Combine(cloneDir, "workflow-templates/validate-seqflow-pr.yaml")).Replace("$default-branch", "main"));
+                File.WriteAllText(".github/workflows/stableflow-release.yaml", File.ReadAllText(Path.Combine(cloneDir, "workflow-templates/seqflow-merge-and-release.yaml")).Replace("$default-branch", "main"));
                 Directory.Delete(cloneDir, true);
                 break;
             default:
@@ -141,7 +139,6 @@ class Program {
         if (type == "Console Application" || type == "console" || type == "Class library" || type == "classlib") {
             CMD($"gh secret set MAIN_NUGET_PAT --body {Environment.GetEnvironmentVariable("MAIN_NUGET_PAT")}");
             CMD($"gh secret set CALQ_FRAMEWORK_NUGET_PAT --body {Environment.GetEnvironmentVariable("CALQ_FRAMEWORK_NUGET_PAT")}");
-            CMD($"gh secret set SEQFLOW_PAT --body {Environment.GetEnvironmentVariable("SEQFLOW_PAT")}");
         }
     }
 
