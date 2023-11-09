@@ -107,7 +107,7 @@ class Program {
                 var cloneDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
                 Directory.CreateDirectory(cloneDir);
                 CMD($"gh repo clone calq-framework/.github {cloneDir} -- --depth 1 --branch main");
-                File.WriteAllText(".github/workflows/stableflow-release.yaml", File.ReadAllText(Path.Combine(cloneDir, "workflow-templates/seqflow-merge-and-release.yaml")).Replace("$default-branch", "main"));
+                File.WriteAllText(".github/workflows/stableflow-release.yaml", File.ReadAllText(Path.Combine(cloneDir, "workflow-templates/stableflow-release.yaml")).Replace("$default-branch", "main"));
                 Directory.Delete(cloneDir, true);
                 break;
             default:
