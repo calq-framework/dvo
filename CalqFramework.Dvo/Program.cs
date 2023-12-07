@@ -1,4 +1,4 @@
-﻿using CalqFramework.Tooler;
+﻿using CalqFramework.Options;
 using CalqFramework.Terminal;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -248,6 +248,11 @@ class Program {
     }
 
     static void Main(string[] args) {
-        Tool.Execute(new Program(), args, ToolerOptions.IgnoreCase);
+        CommandLineInterface.Execute(new Program(), args,
+            new CliSerializerOptions() {
+                SkipUnknown = true,
+                BindingAttr = CliSerializerOptions.DefaultLookup | System.Reflection.BindingFlags.IgnoreCase
+            }
+        );
     }
 }

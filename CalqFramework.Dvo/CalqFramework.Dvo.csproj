@@ -12,6 +12,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="CalqFramework.Terminal" Version="0.*" />
-		<PackageReference Include="CalqFramework.Tooler" Version="0.*" />
+		<PackageReference Include="CalqFramework.Options" Version="0.*" />
 	</ItemGroup>
 </Project>

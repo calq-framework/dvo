@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net7.0": {
+      "CalqFramework.Options": {
+        "type": "Direct",
+        "requested": "[0.*, )",
+        "resolved": "0.8.2",
+        "contentHash": "Mmu8K0xRITRrR5jYaJRFfavnsVjsu5tPYkzDvQwnaHZMCQBtyrFNI//avmB6K5OujHNhwXgR47IXylGSlQQamg==",
+        "dependencies": {
+          "CalqFramework.Serialization": "0.6.0"
+        }
+      },
+      "CalqFramework.Terminal": {
+        "type": "Direct",
+        "requested": "[0.*, )",
+        "resolved": "0.3.0",
+        "contentHash": "nZ1NQpXg20+1eUpC2rykcxRlkXZyC2lcrLA47EuaAybDd73Nosc/1u/YI6mw5TcRJ/2YynzjQyW58JIvPfrKYA=="
+      },
+      "CalqFramework.Serialization": {
+        "type": "Transitive",
+        "resolved": "0.6.0",
+        "contentHash": "l/JUOG6zdO6D8HZjOdt2uHCpUzLR229RiUQxoIOsS3AjthblYTeOOSA0Pr/WT6blX/4/lXCB2jf5EL1DMRnVWw==",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        }
+      },
+      "Newtonsoft.Json": {
+        "type": "Transitive",
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+      }
+    }
+  }
+}
