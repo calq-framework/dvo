@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CalqFrameworkDvo\CalqFrameworkDvo.csproj" />
+    <ProjectReference Include="..\CalqFramework.Dvo\CalqFramework.Dvo.csproj" />
   </ItemGroup>
 
 </Project>

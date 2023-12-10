@@ -1,4 +1,4 @@
-namespace CalqFrameworkDvoTest;
+namespace CalqFramework.DvoTest;
 
 public class UnitTest1
 {

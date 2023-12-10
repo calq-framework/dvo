@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using static CalqFramework.Terminal.CommandLineUtil;
 
-namespace CalqFrameworkDvo;
+namespace CalqFramework.Dvo;
 
 class Program {
     private void RetryWithStashingCMD(string cmd) {
