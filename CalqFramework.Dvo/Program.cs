@@ -1,5 +1,6 @@
-﻿using CalqFramework.Options;
+﻿using CalqFramework.Cli;
 using CalqFramework.Shell;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
 using static CalqFramework.Shell.ShellUtil;
@@ -249,11 +250,9 @@ class Program {
 
     static void Main(string[] args) {
         ShellUtil.SetShell(new CommandLine());
-        CommandLineInterface.Execute(new Program(), args,
-            new CliSerializerOptions() {
-                SkipUnknown = true,
-                BindingAttr = CliSerializerOptions.DefaultLookup | System.Reflection.BindingFlags.IgnoreCase
-            }
-        );
+        var result = CommandLineInterface.Execute(new Program());
+        if (result != null) {
+            Console.WriteLine(JsonSerializer.Serialize(result));
+        }
     }
 }
