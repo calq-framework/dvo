@@ -1,8 +1,8 @@
 ﻿using CalqFramework.Options;
-using CalqFramework.Terminal;
+using CalqFramework.Shell;
 using System.Text.RegularExpressions;
 using System.Xml;
-using static CalqFramework.Terminal.CommandLineUtil;
+using static CalqFramework.Shell.ShellUtil;
 
 namespace CalqFramework.Dvo;
 
@@ -248,6 +248,7 @@ class Program {
     }
 
     static void Main(string[] args) {
+        ShellUtil.SetShell(new CommandLine());
         CommandLineInterface.Execute(new Program(), args,
             new CliSerializerOptions() {
                 SkipUnknown = true,
