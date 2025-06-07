@@ -1,4 +1,5 @@
 ﻿using CalqFramework.Cli;
+using CalqFramework.Cli.Serialization;
 using CalqFramework.Cmd;
 using CalqFramework.Cmd.Shells;
 using System.Text.Json;
@@ -11,32 +12,32 @@ namespace CalqFramework.Dvo;
 class Program {
     private void RetryWithStashingCMD(string cmd) {
         try {
-            CMD(cmd);
+            RUN(cmd);
         } catch (ShellScriptException) {
             var hasUncommitedChanges = CMD("git diff") != "" ? true : false;
             if (hasUncommitedChanges) {
-                CMD("git stash push --include-untracked --quiet");
+                RUN("git stash push --include-untracked --quiet");
                 try {
-                    CMD(cmd);
+                    RUN(cmd);
                 } finally {
-                    CMD("git stash pop --quiet");
+                    RUN("git stash pop --quiet");
                 }
             }
         }
     }
 
-    public void Init(string type, string projectName) {
+    public void Init(string type, [CliName("n")][CliName("projectFullName")] string projectFullName, string? organization = null) {
         if (string.IsNullOrEmpty(type)) {
-            CMD($"dotnet {Environment.GetCommandLineArgs()}");
+            RUN($"dotnet {Environment.GetCommandLineArgs()}");
             return;
         }
 
-        if (string.IsNullOrEmpty(projectName)) {
-            CMD($"dotnet {Environment.GetCommandLineArgs()}");
+        if (string.IsNullOrEmpty(projectFullName)) {
+            RUN($"dotnet {Environment.GetCommandLineArgs()}");
             return;
         }
 
-        var projectNameWithoutRootNamespace = projectName.Substring(projectName.IndexOf('.') + 1);
+        var projectNameWithoutRootNamespace = projectFullName.Substring(projectFullName.IndexOf('.') + 1);
 
         string projectKebabName = projectNameWithoutRootNamespace;
         projectKebabName = Regex.Replace(projectKebabName, "([a-z0-9])([A-Z])", "$1-$2");
@@ -50,97 +51,93 @@ class Program {
         projectKebabName = Regex.Replace(projectKebabName, "[. ]", "_");
         projectSnakeName = projectSnakeName.ToLower();
 
-        var user = CMD("git config user.name").Trim();
-        var projectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "repos", user, projectKebabName);
-        Directory.CreateDirectory(projectPath);
-        Directory.SetCurrentDirectory(projectPath);
+        var user = CMD("git config user.name");
+        var projectDir = Path.Combine(PWD, projectKebabName);
+        Directory.CreateDirectory(projectDir);
+        CD(projectDir);
 
         switch (type) {
-            case "shell":
-                var projectFolder = Path.Combine(projectPath, projectName);
-                Directory.CreateDirectory(projectFolder);
-                Directory.SetCurrentDirectory(projectFolder);
-                File.WriteAllText(projectSnakeName, "");
-                CMD($"chmod +x {projectSnakeName}");
-                Directory.SetCurrentDirectory(projectPath);
-                //File.WriteAllText(".gitignore", CMD("curl https://www.toptal.com/developers/gitignore/api/linux,macos,windows,visualstudiocode"));
-                File.WriteAllText(".gitignore", new HttpClient().GetStringAsync("https://www.toptal.com/developers/gitignore/api/linux,macos,windows,visualstudiocode").Result);
-                break;
             case "empty":
                 break;
             case "Console Application":
             case "console":
             case "Class library":
             case "classlib":
-                var testProjectName = projectName + "Test";
-                var projectFile = Path.Combine(projectName, projectName + ".csproj");
+                var testProjectName = projectFullName + "Test";
+                var projectFile = Path.Combine(projectFullName, projectFullName + ".csproj");
                 var testProjectFile = Path.Combine(testProjectName, testProjectName + ".csproj");
-                var solutionFile = projectName + ".sln";
+                var solutionFile = projectFullName + ".sln";
 
-                CMD($"dotnet new {type} -n {projectName}");
-                CMD($"dotnet new xunit -n {testProjectName}");
-                CMD($"dotnet new sln -n {projectName}");
-                CMD($"dotnet add {testProjectFile} reference {projectFile}");
-                CMD($"dotnet sln {solutionFile} add {projectFile} {testProjectFile}");
-
-                //var projectFileContents = File.ReadAllText(projectFile);
-                //projectFileContents = Regex.Replace(projectFileContents, "(<PropertyGroup>)\r\n    <Nullable>enable</Nullable>", "$1\r\n    <Nullable>enable</Nullable>");
-                //projectFileContents = Regex.Replace(projectFileContents, "(</PropertyGroup>)  <RootNamespace>{projectFullName}</RootNamespace>\r\n  $1", "$1  <RootNamespace>{projectFullName}</RootNamespace>\r\n  $1");
-                //projectFileContents = Regex.Replace(projectFileContents, "(</PropertyGroup>)  <PackageId>{projectFullName}</PackageId>\r\n  $1", "$1  <PackageId>{projectFullName}</PackageId>\r\n  $1");
-                //projectFileContents = Regex.Replace(projectFileContents, "(</PropertyGroup>)  <Version>0.0.0</Version>\r\n  $1", "$1  <Version>0.0.0</Version>\r\n  $1");
-                //File.WriteAllText(projectFile, projectFileContents);
+                RUN($"dotnet new {type} -n {projectFullName}");
+                RUN($"dotnet new xunit -n {testProjectName}");
+                RUN($"dotnet new sln -n {projectFullName}");
+                RUN($"dotnet add {testProjectFile} reference {projectFile}");
+                RUN($"dotnet sln {solutionFile} add {projectFile} {testProjectFile}");
 
                 var xmlDoc = new XmlDocument();
                 xmlDoc.Load(projectFile);
-                (xmlDoc.SelectSingleNode("/Project/PropertyGroup/Nullable") ?? xmlDoc.SelectSingleNode("/Project/PropertyGroup")!.AppendChild(xmlDoc.CreateElement("Nullable"))!).InnerText = "enable";
-                (xmlDoc.SelectSingleNode("/Project/PropertyGroup/RootNamespace") ?? xmlDoc.SelectSingleNode("/Project/PropertyGroup")!.AppendChild(xmlDoc.CreateElement("RootNamespace"))!).InnerText = projectName;
-                (xmlDoc.SelectSingleNode("/Project/PropertyGroup/PackageId") ?? xmlDoc.SelectSingleNode("/Project/PropertyGroup")!.AppendChild(xmlDoc.CreateElement("PackageId"))!).InnerText = projectName;
+                (xmlDoc.SelectSingleNode("/Project/PropertyGroup/RootNamespace") ?? xmlDoc.SelectSingleNode("/Project/PropertyGroup")!.AppendChild(xmlDoc.CreateElement("RootNamespace"))!).InnerText = projectFullName;
+                (xmlDoc.SelectSingleNode("/Project/PropertyGroup/PackageId") ?? xmlDoc.SelectSingleNode("/Project/PropertyGroup")!.AppendChild(xmlDoc.CreateElement("PackageId"))!).InnerText = projectFullName;
                 (xmlDoc.SelectSingleNode("/Project/PropertyGroup/Version") ?? xmlDoc.SelectSingleNode("/Project/PropertyGroup")!.AppendChild(xmlDoc.CreateElement("Version"))!).InnerText = "0.0.0";
                 xmlDoc.Save(projectFile);
 
                 if (type == "Class library" || type == "classlib") {
-                    CMD($"dotnet add {projectFile} package Microsoft.SourceLink.GitHub");
+                    RUN($"dotnet add {projectFile} package Microsoft.SourceLink.GitHub");
                 }
 
-                //File.WriteAllText(".gitignore", CMD("curl https://www.toptal.com/developers/gitignore/api/linux,macos,windows,dotnetcore,monodevelop,visualstudio,visualstudiocode,rider"));
-                File.WriteAllText(".gitignore", new HttpClient().GetStringAsync("https://www.toptal.com/developers/gitignore/api/linux,macos,windows,dotnetcore,monodevelop,visualstudio,visualstudiocode,rider").Result);
+                if (!string.IsNullOrEmpty(organization)) {
+                    var gitignoreText = new HttpClient().GetStringAsync("https://www.toptal.com/developers/gitignore/api/linux,macos,windows,dotnetcore,monodevelop,visualstudio,visualstudiocode,rider").Result;
+                    File.WriteAllText(Path.Combine(PWD, ".gitignore"), gitignoreText);
 
-                Directory.CreateDirectory(Path.Combine(".github", "workflows"));
-                var cloneDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-                Directory.CreateDirectory(cloneDir);
-                CMD($"gh repo clone calq-framework/.github {cloneDir} -- --depth 1 --branch main");
-                File.WriteAllText(".github/workflows/stableflow-release.yaml", File.ReadAllText(Path.Combine(cloneDir, "workflow-templates/stableflow-release.yaml")).Replace("$default-branch", "main"));
-                Directory.Delete(cloneDir, true);
+                    string workflowsDir = Path.Combine(PWD, ".github", "workflows");
+                    Directory.CreateDirectory(workflowsDir);
+                    var cloneDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+                    Directory.CreateDirectory(cloneDir);
+                    RUN($"gh repo clone calq-framework/.github {cloneDir} -- --depth 1 --branch main");
+                    string sourceDir = Path.Combine(cloneDir, "workflow-templates");
+                    foreach (var sourcePath in Directory.GetFiles(sourceDir)) {
+                        string fileName = Path.GetFileName(sourcePath);
+                        string destPath = Path.Combine(workflowsDir, fileName);
+                        string contents = File.ReadAllText(sourcePath).Replace("$default-branch", "main");
+                        File.WriteAllText(destPath, contents);
+                    }
+                    Directory.Delete(cloneDir, true);
+                }
                 break;
             default:
-                CMD($"dotnet new {type} -n {projectName}");
+                RUN($"dotnet new {type} -n {projectFullName}");
                 break;
         }
 
-        var licenseCloneDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(licenseCloneDir);
-        CMD($"gh repo clone calq-framework/license {licenseCloneDir} -- --depth 1 --branch main");
-        var year = DateTime.Now.Year.ToString();
-        var copyrightHolder = user;
-        var licenseTemplatePath = Path.Combine(licenseCloneDir, "LICENSE.template.txt");
-        var licenseContents = File.ReadAllText(licenseTemplatePath)
-            .Replace("${__YEAR__}", year)
-            .Replace("${__COPYRIGHT_HOLDER__}", copyrightHolder);
-        File.WriteAllText("LICENSE.txt", licenseContents);
-        Directory.Delete(licenseCloneDir, true);
+        if (!string.IsNullOrEmpty(organization)) {
+            if (RepositoryExists($"{organization}/license")) {
+                var licenseCloneDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+                Directory.CreateDirectory(licenseCloneDir);
+                RUN($"gh repo clone {organization}/license {licenseCloneDir} -- --depth 1 --branch main");
+                var year = DateTime.Now.Year.ToString();
+                var licenseTemplatePath = Path.Combine(licenseCloneDir, "LICENSE.template.txt");
+                var licenseContents = File.ReadAllText(licenseTemplatePath).Replace("${__YEAR__}", year);
+                File.WriteAllText(Path.Combine(PWD, "LICENSE.txt"), licenseContents);
+                Directory.Delete(licenseCloneDir, true);
+            }
 
-        File.WriteAllText("README.md", "");
+            File.WriteAllText(Path.Combine(PWD, "README.md"), "");
 
-        CMD("git init --initial-branch=main");
-        CMD("git add .");
-        CMD("git commit -m \"init\"");
+            RUN("git init --initial-branch=main");
+            RUN("git add .");
+            RUN("git commit -m \"init\"");
 
-        CMD($"gh repo create {projectKebabName} --private --source=. --remote=origin --disable-wiki");
-        CMD("git push --set-upstream origin main");
+            RUN($"gh repo create {organization}/{projectKebabName} --private --source=. --remote=origin --disable-wiki");
+            RUN("git push --set-upstream origin main");
+        }
 
-        if (type == "Console Application" || type == "console" || type == "Class library" || type == "classlib") {
-            CMD($"gh secret set MAIN_NUGET_PAT --body {Environment.GetEnvironmentVariable("MAIN_NUGET_PAT")}");
-            CMD($"gh secret set CALQ_FRAMEWORK_NUGET_PAT --body {Environment.GetEnvironmentVariable("CALQ_FRAMEWORK_NUGET_PAT")}");
+        bool RepositoryExists(string repo) {
+            try {
+                _ = CMD($"gh repo view {organization}/license");
+                return true;
+            } catch (ShellScriptException) {
+                return false;
+            }
         }
     }
 
@@ -150,9 +147,9 @@ class Program {
 
     public void Switch(string branchName, bool create = false) {
         if (create) {
-            CMD("git fetch origin main");
-            CMD($"git switch -c {branchName} origin/main");
-            CMD($"git push --set-upstream origin {branchName}");
+            RUN("git fetch origin main");
+            RUN($"git switch -c {branchName} origin/main");
+            RUN($"git push --set-upstream origin {branchName}");
         } else {
             RetryWithStashingCMD($"git switch {branchName}");
             Pull();
@@ -170,7 +167,7 @@ class Program {
             return;
         }
 
-        var createOutput = CMD($"gh issue create --title \"{titleOrNumber}\" --body \"\"").Trim(); // https://github.com/$organization/$repository/issues/$issueNumber
+        var createOutput = CMD($"gh issue create --title \"{titleOrNumber}\" --body \"\""); // https://github.com/$organization/$repository/issues/$issueNumber
         //var issueNumber = Regex.Replace(createOutput, @".*\/", "");
         var issueNumber = createOutput.Split('/')[^1];
 
@@ -181,37 +178,37 @@ class Program {
         Switch($"issues/{issueNumber}", true);
     }
 
-    public void Update() {
-        var branchName = CMD("git branch --show-current").Trim();
+    public void Sync() {
+        var branchName = CMD("git branch --show-current");
         if (branchName == "main") {
             Console.WriteLine("ERROR: current branch is set to 'main'");
             Environment.Exit(1);
         }
 
-        var prState = CMD("gh pr status --json state --jq .currentBranch.state").Trim();
+        var prState = CMD("gh pr status --json state --jq .currentBranch.state");
         if (prState != "OPEN" && prState != "") {
             Console.WriteLine("ERROR: related pull request has already been closed");
             Environment.Exit(1);
         }
 
-        CMD("git fetch origin main");
-        CMD("git merge origin/main --autostash");
+        RUN("git fetch origin main");
+        RUN("git merge origin/main --autostash");
     }
 
     public void Pr() {
-        var branchName = CMD("git branch --show-current").Trim();
+        var branchName = CMD("git branch --show-current");
         if (branchName == "main") {
             Console.WriteLine("ERROR: current branch is set to 'main'");
             Environment.Exit(1);
         }
-        var prState = CMD("gh pr status --json state --jq .currentBranch.state").Trim();
+        var prState = CMD("gh pr status --json state --jq .currentBranch.state");
         if (!string.IsNullOrEmpty(prState) && prState != "OPEN") {
             Console.WriteLine("ERROR: related pull request has already been closed");
             Environment.Exit(1);
         }
 
-        Update();
-        CMD("git push");
+        Sync();
+        RUN("git push");
         if (string.IsNullOrEmpty(prState)) {
             var issueNumber = branchName.Replace("issues/", "");
             //var issueTitle = Regex.Match(CMD($"gh issue view {issueNumber}"), @"title:\s*([^\n]+)").Groups[1].Value;
@@ -222,12 +219,12 @@ class Program {
                 throw new Exception("Failed to resolve issue title from 'gh issue view'.");
             }
 
-            CMD($"gh pr create --base main --title \"(#{issueNumber}) {issueTitle}\" --body \"\"");
+            RUN($"gh pr create --base main --title \"(#{issueNumber}) {issueTitle}\" --body \"\"");
         }
     }
 
     public void Merge() {
-        var branchName = CMD("git branch --show-current").Trim();
+        var branchName = CMD("git branch --show-current");
 
         if (branchName == "main") {
             Console.WriteLine("ERROR: current branch is set to 'main'");
@@ -237,16 +234,16 @@ class Program {
         var issueNumber = branchName.StartsWith("issues/") ? branchName.Substring("issues/".Length) : branchName;
 
         Pr();
-        CMD("gh pr merge --squash");
-        CMD($"git push origin --delete {branchName}");
-        CMD($"gh issue close {issueNumber}");
+        RUN("gh pr merge --squash");
+        RUN($"git push origin --delete {branchName}");
+        RUN($"gh issue close {issueNumber}");
         Switch("main", false);
-        CMD($"git branch --delete --force {branchName}");
+        RUN($"git branch --delete --force {branchName}");
         Pull();
     }
 
     public void Relock() {
-        CMD("dotnet restore --no-cache --force-evaluate --use-lock-file");
+        RUN("dotnet restore --no-cache --force-evaluate --use-lock-file");
     }
 
     static void Main(string[] args) {
