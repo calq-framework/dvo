@@ -9,6 +9,8 @@
 		<Version>0.1.8</Version>
 		<PackAsTool>true</PackAsTool>
 		<ToolCommandName>dvo</ToolCommandName>
+		<PackageProjectUrl>https://github.com/calq-framework</PackageProjectUrl>
+		<PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="CalqFramework.Cli" Version="0.*" />

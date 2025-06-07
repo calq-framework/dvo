@@ -315,7 +315,7 @@ class Program {
     /// List up to 100 open GitHub issues without assignees.
     /// </summary>
     public void Issues() {
-        RUN("gh issue list --limit 100 --search 'no: assignee'");
+        RUN("gh issue list --limit 100 --search \"no:assignee\"");
     }
 
     static void Main(string[] args) {
