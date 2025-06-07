@@ -102,9 +102,9 @@ class Program {
             case "Class library":
             case "classlib":
                 var testProjectName = projectFullName + "Test";
-                var projectFile = Path.Combine(projectFullName, projectFullName + ".csproj");
-                var testProjectFile = Path.Combine(testProjectName, testProjectName + ".csproj");
-                var solutionFile = projectFullName + ".sln";
+                var projectFile = Path.Combine(PWD, projectFullName, projectFullName + ".csproj");
+                var testProjectFile = Path.Combine(PWD, testProjectName, testProjectName + ".csproj");
+                var solutionFile = Path.Combine(PWD, projectFullName + ".sln");
 
                 RUN($"dotnet new {type} -n {projectFullName}");
                 RUN($"dotnet new xunit -n {testProjectName}");
