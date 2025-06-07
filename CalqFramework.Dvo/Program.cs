@@ -9,9 +9,7 @@ using static CalqFramework.Cmd.Terminal;
 
 namespace CalqFramework.Dvo;
 
-/// <summary>
-/// Provides a set of commands for streamlining development workflows.
-/// </summary>
+/// <summary>Provides a set of commands for streamlining development workflows.</summary>
 class Program {
 
     /// <summary>
@@ -36,9 +34,7 @@ class Program {
         }
     }
 
-    /// <summary>
-    /// Initializes a new .NET project scaffold based on the specified template type.
-    /// </summary>
+    /// <summary>Initializes a new .NET project scaffold based on the specified template type.</summary>
     /// <param name="type">
     /// The project template identifier to use (e.g. console, classlib, empty).
     /// </param>
@@ -46,7 +42,7 @@ class Program {
     /// The full CLR namespace and project name (e.g. MyCompany.MyProject).
     /// </param>
     /// <param name="organization">
-    /// Optional GitHub organization or user under which to create and push the new repository.
+    /// Optional GitHub organization used for repository creation.
     /// </param>
     /// <exception cref="ShellScriptException">
     /// Thrown when any invoked shell command (via <c>RUN</c> or <c>CMD</c>) fails and cannot be recovered by stashing or retry logic.
@@ -183,16 +179,12 @@ class Program {
         }
     }
 
-    /// <summary>
-    /// Perform git pull with automatic retry via stashing on conflict.
-    /// </summary>
+    /// <summary>Perform git pull with automatic retry via stashing on conflict.</summary>
     public void Pull() {
         RetryWithStashingCMD("git pull");
     }
 
-    /// <summary>
-    /// Switch to a git branch, optionally creating it from origin/main.
-    /// </summary>
+    /// <summary>Switch to a git branch, optionally creating it from origin/main.</summary>
     /// <param name="branchName">Target branch name.</param>
     /// <param name="create">Whether to create the branch first.</param>
     public void Switch(string branchName, bool create = false) {
@@ -206,9 +198,7 @@ class Program {
         }
     }
 
-    /// <summary>
-    /// Create or switch to an issue branch based on title or number.
-    /// </summary>
+    /// <summary>Create or switch to an issue branch based on title or number.</summary>
     /// <param name="titleOrNumber">Issue title or numeric ID.</param>
     public void Issue(string titleOrNumber) {
         if (Regex.Match(titleOrNumber, "^[0-9]+$").Value == titleOrNumber) {
@@ -231,9 +221,7 @@ class Program {
         Switch($"issues/{issueNumber}", true);
     }
 
-    /// <summary>
-    /// Merge origin/main into current branch with autostashing.
-    /// </summary>
+    /// <summary>Merge origin/main into current branch with autostashing.</summary>
     public void Sync() {
         string branchName = CMD("git branch --show-current");
         if (branchName == "main") {
@@ -251,9 +239,7 @@ class Program {
         RUN("git merge origin/main --autostash");
     }
 
-    /// <summary>
-    /// Push branch and create or update a pull request on GitHub.
-    /// </summary>
+    /// <summary>Push branch and create or update a pull request on GitHub.</summary>
     public void Pr() {
         string branchName = CMD("git branch --show-current");
         if (branchName == "main") {
@@ -280,9 +266,7 @@ class Program {
         }
     }
 
-    /// <summary>
-    /// Merge pull request, delete branch and close associated issue.
-    /// </summary>
+    /// <summary>Merge pull request, delete branch and close associated issue.</summary>
     public void Merge() {
         string branchName = CMD("git branch --show-current");
 
@@ -304,16 +288,12 @@ class Program {
         Pull();
     }
 
-    /// <summary>
-    /// Restore project packages using lock file enforcement.
-    /// </summary>
+    /// <summary>Restore project packages using lock file enforcement.</summary>
     public void Relock() {
         RUN("dotnet restore --no-cache --force-evaluate --use-lock-file");
     }
 
-    /// <summary>
-    /// List up to 100 open GitHub issues without assignees.
-    /// </summary>
+    /// <summary>List up to 100 open GitHub issues without assignees.</summary>
     public void Issues() {
         RUN("gh issue list --limit 100 --search \"no:assignee\"");
     }

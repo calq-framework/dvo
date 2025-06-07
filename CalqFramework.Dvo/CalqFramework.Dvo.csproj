@@ -6,7 +6,7 @@
 		<Nullable>enable</Nullable>
 		<RootNamespace>CalqFramework.Dvo</RootNamespace>
 		<PackageId>CalqFramework.Dvo</PackageId>
-		<Version>0.1.8</Version>
+		<Version>0.1.14</Version>
 		<PackAsTool>true</PackAsTool>
 		<ToolCommandName>dvo</ToolCommandName>
 		<PackageProjectUrl>https://github.com/calq-framework</PackageProjectUrl>
