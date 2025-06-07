@@ -300,6 +300,7 @@ class Program {
 
     static void Main(string[] args) {
         LocalTerminal.Shell = new CommandLine();
+        LocalTerminal.TerminalLogger = new DvoTerminalLogger();
         var result = new CommandLineInterface().Execute(new Program());
         if (result is not ResultVoid) {
             Console.WriteLine(JsonSerializer.Serialize(result));
