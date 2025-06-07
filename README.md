@@ -20,3 +20,8 @@ brew install gh
 brew install --cask dotnet-sdk@9
 dotnet tool update --global CalqFramework.Dvo
 ```
+
+## Usage
+```
+dvo --help
+```
