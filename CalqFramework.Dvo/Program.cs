@@ -68,7 +68,7 @@ class Program {
     /// </list>
     /// </remarks>
 
-    public void Init(string type, [CliName("n")][CliName("projectFullName")] string projectFullName, string? organization = null) {
+    public void Init(string type, [CliName("projectFullName")][CliName("n")] string projectFullName, string? organization = null) {
         if (string.IsNullOrEmpty(type)) {
             RUN($"dotnet {Environment.GetCommandLineArgs().Skip(1)}");
             return;
