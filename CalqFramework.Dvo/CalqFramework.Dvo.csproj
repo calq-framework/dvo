@@ -11,6 +11,7 @@
 		<ToolCommandName>dvo</ToolCommandName>
 		<PackageProjectUrl>https://github.com/calq-framework</PackageProjectUrl>
 		<PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="CalqFramework.Cli" Version="0.*" />
