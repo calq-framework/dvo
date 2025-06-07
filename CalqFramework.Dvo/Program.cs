@@ -9,7 +9,17 @@ using static CalqFramework.Cmd.Terminal;
 
 namespace CalqFramework.Dvo;
 
+/// <summary>
+/// Provides a set of commands for streamlining development workflows.
+/// </summary>
 class Program {
+
+    /// <summary>
+    /// Executes a shell command, stashing any uncommitted changes if the command fails,
+    /// then retries the command and restores the stashed changes.
+    /// </summary>
+    /// <param name="cmd">The shell command to execute.</param>
+    /// <exception cref="ShellScriptException">Thrown if the command fails even after stashing.</exception>
     private void RetryWithStashingCMD(string cmd) {
         try {
             RUN(cmd);
@@ -25,6 +35,38 @@ class Program {
             }
         }
     }
+
+    /// <summary>
+    /// Initializes a new .NET project scaffold based on the specified template type.
+    /// </summary>
+    /// <param name="type">
+    /// The project template identifier to use (e.g. console, classlib, empty).
+    /// </param>
+    /// <param name="projectFullName">
+    /// The full CLR namespace and project name (e.g. MyCompany.MyProject).
+    /// </param>
+    /// <param name="organization">
+    /// Optional GitHub organization or user under which to create and push the new repository.
+    /// </param>
+    /// <exception cref="ShellScriptException">
+    /// Thrown when any invoked shell command (via <c>RUN</c> or <c>CMD</c>) fails and cannot be recovered by stashing or retry logic.
+    /// </exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown if <c>projectFullName</c> does not contain a dot separator to derive the root namespace.
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// The method performs the following high-level steps:
+    /// </para>
+    /// <list type="number">
+    ///   <item><description>Validate inputs; delegate to <c>dotnet</c> CLI on missing parameters.</description></item>
+    ///   <item><description>Derive a kebab-case and snake-case short name from the portion of <c>projectFullName</c> after the first dot.</description></item>
+    ///   <item><description>Create and switch into a directory named by the kebab-case short name.</description></item>
+    ///   <item><description>Depending on <c>type</c>, invoke <c>dotnet new</c> to scaffold console apps, class libraries, unit tests, and solutions.</description></item>
+    ///   <item><description>For class libraries, apply GitHub source link package and update the .csproj&apos;s RootNamespace, PackageId, and Version elements.</description></item>
+    ///   <item><description>If <c>organization</c> is specified, fetch and install .gitignore, CI templates, LICENSE, README, and push an initial commit to GitHub.</description></item>
+    /// </list>
+    /// </remarks>
 
     public void Init(string type, [CliName("n")][CliName("projectFullName")] string projectFullName, string? organization = null) {
         if (string.IsNullOrEmpty(type)) {
@@ -141,10 +183,18 @@ class Program {
         }
     }
 
+    /// <summary>
+    /// Perform git pull with automatic retry via stashing on conflict.
+    /// </summary>
     public void Pull() {
         RetryWithStashingCMD("git pull");
     }
 
+    /// <summary>
+    /// Switch to a git branch, optionally creating it from origin/main.
+    /// </summary>
+    /// <param name="branchName">Target branch name.</param>
+    /// <param name="create">Whether to create the branch first.</param>
     public void Switch(string branchName, bool create = false) {
         if (create) {
             RUN("git fetch origin main");
@@ -156,9 +206,13 @@ class Program {
         }
     }
 
+    /// <summary>
+    /// Create or switch to an issue branch based on title or number.
+    /// </summary>
+    /// <param name="titleOrNumber">Issue title or numeric ID.</param>
     public void Issue(string titleOrNumber) {
-        if (Regex.Match(titleOrNumber, @"^[0-9]+$").Value == titleOrNumber) {
-            var branchName = $"issues/{titleOrNumber}";
+        if (Regex.Match(titleOrNumber, "^[0-9]+$").Value == titleOrNumber) {
+            string branchName = $"issues/{titleOrNumber}";
             try {
                 Switch(branchName, false);
             } catch (ShellScriptException) {
@@ -167,26 +221,28 @@ class Program {
             return;
         }
 
-        var createOutput = CMD($"gh issue create --title \"{titleOrNumber}\" --body \"\""); // https://github.com/$organization/$repository/issues/$issueNumber
-        //var issueNumber = Regex.Replace(createOutput, @".*\/", "");
-        var issueNumber = createOutput.Split('/')[^1];
+        string createOutput = CMD($"gh issue create --title \"{titleOrNumber}\" --body \"\"");
+        string issueNumber = createOutput.Split('/')[^1];
 
-        if (Regex.Match(issueNumber, @"^[0-9]+$").Value != issueNumber) {
+        if (Regex.Match(issueNumber, "^[0-9]+$").Value != issueNumber) {
             throw new Exception("Failed to resolve issue number from 'gh issue create'.");
         }
 
         Switch($"issues/{issueNumber}", true);
     }
 
+    /// <summary>
+    /// Merge origin/main into current branch with autostashing.
+    /// </summary>
     public void Sync() {
-        var branchName = CMD("git branch --show-current");
+        string branchName = CMD("git branch --show-current");
         if (branchName == "main") {
             Console.WriteLine("ERROR: current branch is set to 'main'");
             Environment.Exit(1);
         }
 
-        var prState = CMD("gh pr status --json state --jq .currentBranch.state");
-        if (prState != "OPEN" && prState != "") {
+        string prState = CMD("gh pr status --json state --jq .currentBranch.state");
+        if (prState != "OPEN" && prState != string.Empty) {
             Console.WriteLine("ERROR: related pull request has already been closed");
             Environment.Exit(1);
         }
@@ -195,13 +251,17 @@ class Program {
         RUN("git merge origin/main --autostash");
     }
 
+    /// <summary>
+    /// Push branch and create or update a pull request on GitHub.
+    /// </summary>
     public void Pr() {
-        var branchName = CMD("git branch --show-current");
+        string branchName = CMD("git branch --show-current");
         if (branchName == "main") {
             Console.WriteLine("ERROR: current branch is set to 'main'");
             Environment.Exit(1);
         }
-        var prState = CMD("gh pr status --json state --jq .currentBranch.state");
+
+        string prState = CMD("gh pr status --json state --jq .currentBranch.state");
         if (!string.IsNullOrEmpty(prState) && prState != "OPEN") {
             Console.WriteLine("ERROR: related pull request has already been closed");
             Environment.Exit(1);
@@ -209,29 +269,31 @@ class Program {
 
         Sync();
         RUN("git push");
-        if (string.IsNullOrEmpty(prState)) {
-            var issueNumber = branchName.Replace("issues/", "");
-            //var issueTitle = Regex.Match(CMD($"gh issue view {issueNumber}"), @"title:\s*([^\n]+)").Groups[1].Value;
-            var issueInfo = CMD($"gh issue view {issueNumber}");
-            var issueTitle = issueInfo.Split('\n').Where(x => x.StartsWith("title")).FirstOrDefault()?.Split(':')[1].Trim();
 
-            if (string.IsNullOrEmpty(issueTitle)) {
-                throw new Exception("Failed to resolve issue title from 'gh issue view'.");
-            }
+        if (string.IsNullOrEmpty(prState)) {
+            string issueNumber = branchName.Replace("issues/", string.Empty);
+            string issueInfo = CMD($"gh issue view {issueNumber} --json title");
+            var issueJson = JsonSerializer.Deserialize<JsonElement>(issueInfo);
+            string issueTitle = issueJson.GetProperty("title").GetString()!;
 
             RUN($"gh pr create --base main --title \"(#{issueNumber}) {issueTitle}\" --body \"\"");
         }
     }
 
+    /// <summary>
+    /// Merge pull request, delete branch and close associated issue.
+    /// </summary>
     public void Merge() {
-        var branchName = CMD("git branch --show-current");
+        string branchName = CMD("git branch --show-current");
 
         if (branchName == "main") {
             Console.WriteLine("ERROR: current branch is set to 'main'");
             Environment.Exit(1);
         }
 
-        var issueNumber = branchName.StartsWith("issues/") ? branchName.Substring("issues/".Length) : branchName;
+        string issueNumber = branchName.StartsWith("issues/")
+            ? branchName.Substring("issues/".Length)
+            : branchName;
 
         Pr();
         RUN("gh pr merge --squash");
@@ -242,10 +304,16 @@ class Program {
         Pull();
     }
 
+    /// <summary>
+    /// Restore project packages using lock file enforcement.
+    /// </summary>
     public void Relock() {
         RUN("dotnet restore --no-cache --force-evaluate --use-lock-file");
     }
 
+    /// <summary>
+    /// List up to 100 open GitHub issues without assignees.
+    /// </summary>
     public void Issues() {
         RUN("gh issue list --limit 100 --search 'no: assignee'");
     }
