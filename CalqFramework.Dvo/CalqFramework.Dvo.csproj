@@ -12,6 +12,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="CalqFramework.Cli" Version="0.*" />
-		<PackageReference Include="CalqFramework.Shell" Version="0.*" />
+		<PackageReference Include="CalqFramework.Cmd" Version="0.*" />
 	</ItemGroup>
 </Project>

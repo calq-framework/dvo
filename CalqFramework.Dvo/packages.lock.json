@@ -11,11 +11,11 @@
           "CalqFramework.DataAccess": "0.46.4"
         }
       },
-      "CalqFramework.Shell": {
+      "CalqFramework.Cmd": {
         "type": "Direct",
         "requested": "[0.*, )",
-        "resolved": "0.8.0",
-        "contentHash": "rzyddB5zESl2nO9lt71mqp1bj4DCAOmitpQee7HjsXPk+diDUVo1NvRw/sVsk5FZkDWLTwsndddACkN1St5tlg=="
+        "resolved": "0.23.3",
+        "contentHash": "MlbcaDu8OW7uYfmGBkMaW2hI1cOVg2eZZSR/QXiWaA/Ke+qeeHGiaShOpGBr5QdLW+RPPx46kPOyEFtK6CwJ1A=="
       },
       "CalqFramework.DataAccess": {
         "type": "Transitive",

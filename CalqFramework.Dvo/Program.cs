@@ -1,9 +1,10 @@
 ﻿using CalqFramework.Cli;
-using CalqFramework.Shell;
+using CalqFramework.Cmd;
+using CalqFramework.Cmd.Shells;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
-using static CalqFramework.Shell.ShellUtil;
+using static CalqFramework.Cmd.Terminal;
 
 namespace CalqFramework.Dvo;
 
@@ -11,7 +12,7 @@ class Program {
     private void RetryWithStashingCMD(string cmd) {
         try {
             CMD(cmd);
-        } catch (CommandExecutionException) {
+        } catch (ShellScriptException) {
             var hasUncommitedChanges = CMD("git diff") != "" ? true : false;
             if (hasUncommitedChanges) {
                 CMD("git stash push --include-untracked --quiet");
@@ -163,7 +164,7 @@ class Program {
             var branchName = $"issues/{titleOrNumber}";
             try {
                 Switch(branchName, false);
-            } catch (CommandExecutionException) {
+            } catch (ShellScriptException) {
                 Switch(branchName, true);
             }
             return;
@@ -249,9 +250,9 @@ class Program {
     }
 
     static void Main(string[] args) {
-        ShellUtil.SetShell(new CommandLine());
-        var result = CommandLineInterface.Execute(new Program());
-        if (result != null) {
+        LocalTerminal.Shell = new CommandLine();
+        var result = new CommandLineInterface().Execute(new Program());
+        if (result is not ResultVoid) {
             Console.WriteLine(JsonSerializer.Serialize(result));
         }
     }
