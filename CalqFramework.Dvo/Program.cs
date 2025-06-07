@@ -28,12 +28,12 @@ class Program {
 
     public void Init(string type, [CliName("n")][CliName("projectFullName")] string projectFullName, string? organization = null) {
         if (string.IsNullOrEmpty(type)) {
-            RUN($"dotnet {Environment.GetCommandLineArgs()}");
+            RUN($"dotnet {Environment.GetCommandLineArgs().Skip(1)}");
             return;
         }
 
         if (string.IsNullOrEmpty(projectFullName)) {
-            RUN($"dotnet {Environment.GetCommandLineArgs()}");
+            RUN($"dotnet {Environment.GetCommandLineArgs().Skip(1)}");
             return;
         }
 
@@ -244,6 +244,10 @@ class Program {
 
     public void Relock() {
         RUN("dotnet restore --no-cache --force-evaluate --use-lock-file");
+    }
+
+    public void Issues() {
+        RUN("gh issue list --limit 100 --search 'no: assignee'");
     }
 
     static void Main(string[] args) {
