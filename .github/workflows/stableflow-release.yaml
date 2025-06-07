@@ -2,8 +2,6 @@ name: release
 
 on:
   workflow_dispatch:
-    branches:
-      - main
   push:
     branches:
       - main
@@ -16,6 +14,4 @@ jobs:
     uses: calq-framework/stableflow/.github/workflows/stableflow.yaml@latest
     with:
       command: release
-    secrets:
-      MAIN_NUGET_PAT: ${{ secrets.MAIN_NUGET_PAT }}
-      CALQ_FRAMEWORK_NUGET_PAT: ${{ secrets.CALQ_FRAMEWORK_NUGET_PAT }}
+    secrets: inherit
