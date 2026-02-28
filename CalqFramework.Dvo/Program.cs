@@ -94,6 +94,11 @@ class Program {
         Directory.CreateDirectory(projectDir);
         CD(projectDir);
 
+        var testProjectName = projectFullName + "Test";
+        var projectFile = Path.Combine(PWD, projectFullName, projectFullName + ".csproj");
+        var testProjectFile = Path.Combine(PWD, testProjectName, testProjectName + ".csproj");
+        var solutionFile = Path.Combine(PWD, projectFullName + ".sln");
+
         switch (type) {
             case "empty":
                 break;
@@ -101,11 +106,6 @@ class Program {
             case "console":
             case "Class library":
             case "classlib":
-                var testProjectName = projectFullName + "Test";
-                var projectFile = Path.Combine(PWD, projectFullName, projectFullName + ".csproj");
-                var testProjectFile = Path.Combine(PWD, testProjectName, testProjectName + ".csproj");
-                var solutionFile = Path.Combine(PWD, projectFullName + ".sln");
-
                 RUN($"dotnet new {type} -n {projectFullName}");
                 RUN($"dotnet new xunit -n {testProjectName}");
                 RUN($"dotnet new sln -n {projectFullName}");
@@ -141,6 +141,14 @@ class Program {
                     }
                     Directory.Delete(cloneDir, true);
                 }
+                break;
+            case "ASP.NET Core Web API":
+            case "webapi":
+                RUN($"dotnet new {type} -n {projectFullName} --use-controllers");
+                RUN($"dotnet new xunit -n {testProjectName}");
+                RUN($"dotnet new sln -n {projectFullName}");
+                RUN($"dotnet add {testProjectFile} reference {projectFile}");
+                RUN($"dotnet sln {solutionFile} add {projectFile} {testProjectFile}");
                 break;
             default:
                 RUN($"dotnet new {type} -n {projectFullName}");
