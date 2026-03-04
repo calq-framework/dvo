@@ -1,4 +1,4 @@
-﻿using CalqFramework.Cmd;
+using CalqFramework.Cmd;
 using CalqFramework.Cmd.TerminalComponents;
 
 namespace CalqFramework.Dvo;
