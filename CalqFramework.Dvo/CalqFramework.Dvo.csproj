@@ -10,9 +10,14 @@
 		<PackAsTool>true</PackAsTool>
 		<ToolCommandName>dvo</ToolCommandName>
 		<PackageProjectUrl>https://github.com/calq-framework</PackageProjectUrl>
-		<PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<Copyright>2024 Calq Framework</Copyright>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\LICENSE.txt" Pack="true" PackagePath=""/>
+	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="CalqFramework.Cli" Version="0.*" />
 		<PackageReference Include="CalqFramework.Cmd" Version="0.*" />
